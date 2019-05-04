@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Home Page</title>
+</head>
+<body>
+<header id="header" class="alt" th:include="navbar :: navbar(nameOfUser=${nameOfUser})" />
+<div class="row">
+    <div class="container">
+        <div class="row">
+            <div class="col"><h1 th:text="${bookheader}"></h1></div>
+            <div class="col">
+                <form  th:action="@{/books}" th:object="${find}" th:method="post" class="form-inline my-2 my-lg-0" style="float: right;">
+                    <input type="text" id="title" th:field="*{title}"  class="form-control mr-sm-2"  placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+        <div th:if="${not #lists.isEmpty(books)}">
+            <div th:each="book : ${books}">
+                <div class="card" style="max-width: 90%; margin-bottom: 10px; margin-top: 10px; margin-left: auto; margin-right: auto;">
+                    <div class="row no-gutters" style="margin: 20px">
+                        <div class="col-md-4" style="text-align: center">
+                            <img width="200" height="360" th:src="@{'/img/' + ${book.getBookCover()}}"/>
+                        </div>
+                        <div class="col-md-8" style="position: relative">
+                            <div class="card-body">
+                                <a th:href="@{/books/{id}(id=${book.getId()})}" style="color:black;text-decoration:none;"><h4 class="card-title" th:text="${book.getTitle()}"></h4></a>
+                                <p class="card-text" th:text="${book.getAuthor().getFirstName()}+' '+${book.getAuthor().getLastName()}"></p>
+                                <p class="card-text"><small class="text-muted" th:text="'Data wydania: '+${book.getReleaseDate()}"></small></p>
+                                <p class="card-text" th:text="${book.getDescription()}"></p>
+                                <form  th:action="@{/addbook}" th:object="${find}" th:method="post" th:if="${not nameOfUser.equals('anonymousUser') and not mybooks}">
+                                    <input type="hidden" name="title" th:value="${book.getTitle()}"/>
+                                    <button type="submit" class="btn btn-success"  style="position:absolute ;bottom: 0; right: 0">Add book to favourities</button>
+                                </form>
+                                <form  th:action="@{/removebook}" th:object="${find}" th:method="post" th:if="${not nameOfUser.equals('anonymousUser') and mybooks}">
+                                    <input type="hidden" name="title" th:value="${book.getTitle()}"/>
+                                    <button type="submit" class="btn btn-success"  style="position:absolute ;bottom: 0; right: 0">Remove book from favourities</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript" th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</body>
+</html>
